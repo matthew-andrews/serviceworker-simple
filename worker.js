@@ -13,7 +13,7 @@ this.addEventListener('message', function(e) {
   var message = e.data;
   console.log("Service Worker just got a message");
   console.log(message.text);
-  window.setTimeout(function() {
+  setTimeout(function() {
     message.port.postMessage("We got your message: "+message.text);
   }, 2500);
 }.bind(this));
