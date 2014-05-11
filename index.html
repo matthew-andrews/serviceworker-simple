@@ -11,6 +11,16 @@
     <a href="http://mattandre.ws">mattandre.ws</a> <a href="http://twitter.com/andrewsmatt">@andrewsmatt</a>
   </div>
   <script>
+    window.addEventListener('message', function() {
+      debugger;
+    });
+
+    function sendMessagePortToServiceWorker(sw, text, handler) {
+      var messageChannel = new MessageChannel();
+      messageChannel.port1.onmessage = handler;
+      sw.postMessage({ port: messageChannel.port2, text: text }, [messageChannel.port2]);
+    }
+
     function log(text) {
       var el = document.createElement('div');
       el.innerText = text;
@@ -21,6 +31,7 @@
       log("Browser supports Service Worker");
       if (navigator.serviceWorker.current) {
         log("Current Service Worker state: \\o/");
+        log('Go to chrome://serviceworker-internals/ to see Service Worker debug output');
         window.ourServiceWorker = navigator.serviceWorker;
       } else {
         log("No Service Worker active...");
@@ -52,7 +63,9 @@
       swmessage.addEventListener('click', function() {
         if (window.ourServiceWorker) {
           log('About to try to send a message to the Service Worker');
-          window.ourServiceWorker.postMessage("Hello Service Worker, can you hear me?");
+          sendMessagePortToServiceWorker(ourServiceWorker, "Hello Service Worker, can you hear me?", function(e) {
+            log(e.data);
+          });
 	} else {
           log("Service Worker not ready yet");
         }
