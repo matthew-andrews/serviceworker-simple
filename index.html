@@ -4,13 +4,12 @@
   </head>
   <body>
   <div style="max-width: 700px; margin: 0 auto 0 auto;">
-    <button class="js-install">Install Service Worker</button>
-    <button class="js-message">Send Message to Service Worker</button>
-    <button class="js-uninstall">Uninstall Service Worker</button>
+    <button id="swinstall">Install Service Worker</button>
+    <button id="swmessage">Send Message to Service Worker</button>
+    <button id="swuninstall">Uninstall Service Worker</button>
     <div id="js-log" style="height: 400px; overflow: scroll; color: white; background: black; font-family: monospace; line-height: 150%; font-size: 12px; padding: 7px;"></div> 
     <a href="http://serviceworker.io">serviceworker.io</a> <a href="http://twitter.com/serviceworkerio">@serviceworkerio</a>
   </div>
-  <script src="//build.origami.ft.com/bundles/js?modules=ftdomdelegate&export=bundle&sync=true" type="text/javascript"></script>
   <script>
     function log(text) {
       var el = document.createElement('div');
@@ -27,8 +26,7 @@
         log("No Service Worker active...");
       }
 
-      var delegate = new bundle.ftdomdelegate(document.body);
-      delegate.on('click', '.js-install', function() {
+      swinstall.addEventListener('click', function() {
         log('About to try to install a Service Worker');
         navigator.serviceWorker.register('/worker.js')
           .then(function(serviceWorker) {
@@ -39,7 +37,7 @@
           });
       });
 
-      delegate.on('click', '.js-uninstall', function() {
+      swuninstall.addEventListener('click', function() {
         log('About to try to uninstall a Service Worker');
         navigator.serviceWorker.unregister('/*')
           .then(function() {
@@ -50,7 +48,7 @@
           });
       });
 
-      delegate.on('click', '.js-message', function() {
+      swmessage.addEventListener('click', function() {
         if (!window.ourServiceWorker) log("Service Worker not ready yet");
         log('About to try to send a message to the Service Worker');
         window.ourServiceWorker.postMessage("Hello Service Worker, can you hear me?");
