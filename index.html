@@ -33,7 +33,7 @@
             log('Successfully installed ServiceWorker');
             window.ourServiceWorker = serviceWorker;
           }, function(why) {
-            log('Failed to install'+why);
+            log('Failed to install:' + why);
           });
       });
 
@@ -49,9 +49,12 @@
       });
 
       swmessage.addEventListener('click', function() {
-        if (!window.ourServiceWorker) log("Service Worker not ready yet");
-        log('About to try to send a message to the Service Worker');
-        window.ourServiceWorker.postMessage("Hello Service Worker, can you hear me?");
+        if (window.ourServiceWorker) {
+          log('About to try to send a message to the Service Worker');
+          window.ourServiceWorker.postMessage("Hello Service Worker, can you hear me?");
+	} else {
+          log("Service Worker not ready yet");
+        }
       });
     } else {
       log("Browser does not support Service Worker, are you using Chrome Canary?  Is the Service Worker flag switched on? chrome://flags/#enable-service-worker");
