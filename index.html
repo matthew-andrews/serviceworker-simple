@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  </head>
+  <body>
+  <div style="max-width: 700px; margin: 0 auto 0 auto;">
+    <button class="js-install">Install Service Worker</button>
+    <button class="js-message">Send Message to Service Worker</button>
+    <button class="js-uninstall">Uninstall Service Worker</button>
+    <div id="js-log" style="height: 400px; overflow: scroll; color: white; background: black; font-family: monospace; line-height: 150%; font-size: 12px; padding: 7px;"></div> 
+    <a href="http://serviceworker.io">serviceworker.io</a> <a href="http://twitter.com/serviceworkerio">@serviceworkerio</a>
+  </div>
+  <script src="//build.origami.ft.com/bundles/js?modules=ftdomdelegate&export=bundle&sync=true" type="text/javascript"></script>
+  <script>
+    function log(text) {
+      var el = document.createElement('div');
+      el.innerText = text;
+      document.getElementById('js-log').appendChild(el);
+    }
+
+    if (navigator.serviceWorker) {
+      log("Browser supports Service Worker");
+      if (navigator.serviceWorker.current) {
+        log("Current Service Worker state: \\o/");
+        window.ourServiceWorker = navigator.serviceWorker;
+      } else {
+        log("No Service Worker active...");
+      }
+
+      var delegate = new bundle.ftdomdelegate(document.body);
+      delegate.on('click', '.js-install', function() {
+        log('About to try to install a Service Worker');
+        navigator.serviceWorker.register('/worker.js')
+          .then(function(serviceWorker) {
+            log('Successfully installed ServiceWorker');
+            window.ourServiceWorker = serviceWorker;
+          }, function(why) {
+            log('Failed to install'+why);
+          });
+      });
+
+      delegate.on('click', '.js-uninstall', function() {
+        log('About to try to uninstall a Service Worker');
+        navigator.serviceWorker.unregister('/*')
+          .then(function() {
+            log('Successfully uninstalled ServiceWorker');
+            delete window.ourServiceWorker;
+          }, function(why) {
+            log('Failed to uninstall'+why);
+          });
+      });
+
+      delegate.on('click', '.js-message', function() {
+        if (!window.ourServiceWorker) log("Service Worker not ready yet");
+        log('About to try to send a message to the Service Worker');
+        window.ourServiceWorker.postMessage("Hello Service Worker, can you hear me?");
+      });
+    } else {
+      log("Browser does not support Service Worker, are you using Chrome Canary?  Is the Service Worker flag switched on? chrome://flags/#enable-service-worker");
+    }
+  </script>
+  </body>
+</html>
