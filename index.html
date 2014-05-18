@@ -21,9 +21,9 @@
       sw.postMessage({ port: messageChannel.port2, text: text }, [messageChannel.port2]);
     }
 
-    function log(text) {
+    function log() {
       var el = document.createElement('div');
-      el.innerHTML = text;
+      el.innerHTML = Array.prototype.join.call(arguments, '<br />');
       document.getElementById('js-log').appendChild(el);
     }
 
@@ -37,19 +37,22 @@
         log("No Service Worker active...");
       }
 
-      swinstall.addEventListener('click', function() {
+      document.getElementById('swinstall').addEventListener('click', function() {
         log('About to try to install a Service Worker');
         navigator.serviceWorker.register('./worker.js')
           .then(function(serviceWorker) {
             log('Successfully installed ServiceWorker');
             log('Go to chrome://serviceworker-internals/ to see Service Worker debug output');
             window.ourServiceWorker = serviceWorker;
+            serviceWorker.addEventListener('statechange', function(event) {
+              log("Worker state is now "+event.target.state);
+            });
           }, function(why) {
             log('Failed to install:' + why);
           });
       });
 
-      swuninstall.addEventListener('click', function() {
+      document.getElementById('swuninstall').addEventListener('click', function() {
         log('About to try to uninstall a Service Worker');
         navigator.serviceWorker.unregister('./*')
           .then(function() {
@@ -60,7 +63,7 @@
           });
       });
 
-      swmessage.addEventListener('click', function() {
+      document.getElementById('swmessage').addEventListener('click', function() {
         if (window.ourServiceWorker) {
           log('About to try to send a message to the Service Worker');
           sendMessagePortToServiceWorker(ourServiceWorker, "Hello Service Worker, can you hear me?", function(e) {
