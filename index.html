@@ -18,7 +18,7 @@
     function sendMessagePortToServiceWorker(sw, text, handler) {
       var messageChannel = new MessageChannel();
       messageChannel.port1.onmessage = handler;
-      sw.postMessage({ port: messageChannel.port2, text: text }, [messageChannel.port2]);
+      ourServiceWorker.postMessage({ port: messageChannel.port2, text: text }, [messageChannel.port2]);
     }
 
     function log() {
