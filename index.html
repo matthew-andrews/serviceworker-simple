@@ -5,7 +5,6 @@
   <body>
   <div style="max-width: 700px; margin: 0 auto 0 auto;">
     <button id="swinstall">Install Service Worker</button>
-    <button id="swmessage">Send Message to Service Worker</button>
     <button id="swuninstall">Uninstall Service Worker</button>
     <div id="js-log" style="height: 400px; overflow: scroll; color: white; background: black; font-family: monospace; line-height: 150%; font-size: 12px; padding: 7px;"></div> 
     <a href="http://mattandre.ws">mattandre.ws</a> <a href="http://twitter.com/andrewsmatt">@andrewsmatt</a>
@@ -14,12 +13,6 @@
     window.addEventListener('message', function() {
       debugger;
     });
-
-    function sendMessagePortToServiceWorker(sw, text, handler) {
-      var messageChannel = new MessageChannel();
-      messageChannel.port1.onmessage = handler;
-      ourServiceWorker.postMessage({ port: messageChannel.port2, text: text }, [messageChannel.port2]);
-    }
 
     function log() {
       var el = document.createElement('div');
@@ -32,7 +25,6 @@
       if (navigator.serviceWorker.current) {
         log("Current Service Worker state: \\o/");
         log('Go to chrome://serviceworker-internals/ to see Service Worker debug output');
-        window.ourServiceWorker = navigator.serviceWorker;
       } else {
         log("No Service Worker active...");
       }
@@ -43,7 +35,6 @@
           .then(function(serviceWorker) {
             log('Successfully installed ServiceWorker');
             log('Go to chrome://serviceworker-internals/ to see Service Worker debug output');
-            window.ourServiceWorker = serviceWorker;
             serviceWorker.addEventListener('statechange', function(event) {
               log("Worker state is now "+event.target.state);
             });
@@ -57,21 +48,9 @@
         navigator.serviceWorker.unregister()
           .then(function() {
             log('Successfully uninstalled ServiceWorker');
-            delete window.ourServiceWorker;
           }, function(why) {
             log('Failed to uninstall'+why);
           });
-      });
-
-      document.getElementById('swmessage').addEventListener('click', function() {
-        if (window.ourServiceWorker) {
-          log('About to try to send a message to the Service Worker');
-          sendMessagePortToServiceWorker(ourServiceWorker, "Hello Service Worker, can you hear me?", function(e) {
-            log(e.data);
-          });
-	} else {
-          log("Service Worker not ready yet");
-        }
       });
     } else {
       log("Browser does not support Service Worker, are you using Chrome Canary?  Is the Service Worker flag switched on? chrome://flags/#enable-service-worker");
