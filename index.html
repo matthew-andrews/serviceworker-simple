@@ -54,7 +54,7 @@
 
       document.getElementById('swuninstall').addEventListener('click', function() {
         log('About to try to uninstall a Service Worker');
-        navigator.serviceWorker.unregister('./worker.js')
+        navigator.serviceWorker.unregister()
           .then(function() {
             log('Successfully uninstalled ServiceWorker');
             delete window.ourServiceWorker;
