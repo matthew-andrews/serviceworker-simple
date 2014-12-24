@@ -31,7 +31,7 @@
 
       document.getElementById('swinstall').addEventListener('click', function() {
         log('About to try to install a Service Worker');
-        navigator.serviceWorker.register('./worker.js')
+        navigator.serviceWorker.register('./worker.js', { scope: 'serviceworker-simple' })
           .then(function(serviceWorker) {
             log('Successfully installed ServiceWorker');
             log('Go to chrome://serviceworker-internals/ to see Service Worker debug output');
