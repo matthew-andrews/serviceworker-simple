@@ -20,6 +20,8 @@
       document.getElementById('js-log').appendChild(el);
     }
 
+    var swRegistration = null;
+
     if (navigator.serviceWorker) {
       log("Browser supports Service Worker");
       if (navigator.serviceWorker.current) {
@@ -33,6 +35,7 @@
         log('About to try to install a Service Worker');
         navigator.serviceWorker.register('./worker.js', { scope: 'serviceworker-simple' })
           .then(function(serviceWorker) {
+            swRegistration = serviceWorker;
             log('Successfully installed ServiceWorker');
             log('Go to chrome://serviceworker-internals/ to see Service Worker debug output');
             serviceWorker.addEventListener('statechange', function(event) {
@@ -45,7 +48,7 @@
 
       document.getElementById('swuninstall').addEventListener('click', function() {
         log('About to try to uninstall a Service Worker');
-        navigator.serviceWorker.unregister()
+        swRegistration.unregister()
           .then(function() {
             log('Successfully uninstalled ServiceWorker');
           }, function(why) {
